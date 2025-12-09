@@ -6,14 +6,23 @@ __pycache__/
 # Django
 db.sqlite3
 /staticfiles/
+media/
+staticfiles/
+*.log
 
 # Virtual environment
 myenv/
 env/
 venv/
+.venv/
 
 # VS Code
 .vscode/
 
 # OS files
 Thumbs.db
+.DS_Store
+
+# Project history
+.history/
+
