@@ -1,0 +1,105 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Microdegree-Ecom</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+        integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+
+    <script type="text/javascript">
+        var user = '{{ request.user }}';
+
+        // ✅ Function to retrieve CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        const csrftoken = getCookie('csrftoken');
+    </script>
+
+    <style>
+        /* Navbar Cart Styling */
+        #cart-icon {
+            width: 35px;
+            height: auto;
+            margin-left: 15px;
+        }
+
+        #cart-total {
+            color: white;
+            margin-left: 5px;
+            font-weight: bold;
+            background-color: red;
+            border-radius: 50%;
+            padding: 2px 8px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand font-weight-bold" href="{% url 'store' %}">Microdegree-Ecom</a>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'store' %}">Store</a>
+                </li>
+            </ul>
+
+            <!-- Cart + Login -->
+            <div class="form-inline my-2 my-lg-0">
+                {% if user.is_authenticated %}
+                <span class="text-light mr-3">Hi, {{ user.username }}</span>
+                {% else %}
+                <a href="#" class="btn btn-warning mr-2">Login</a>
+                {% endif %}
+
+                <a href="{% url 'cart' %}">
+                    <img id="cart-icon" src="{% static 'images/cart.png' %}" alt="Cart">
+                </a>
+                <p id="cart-total">{{ cartItems }}</p>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Page Container -->
+    <div class="container mt-4">
+        {% block content %}
+        {% endblock content %}
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
+    <script type="text/javascript" src="{% static 'js/cart.js' %}"></script>
+</body>
+
+</html>

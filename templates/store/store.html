@@ -1,0 +1,42 @@
+{% extends 'store/main.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Product Grid -->
+<div class="row">
+    {% for product in products %}
+    <!-- Each Product Card -->
+    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+        <div class="box-element product text-center p-3 border rounded shadow-sm">
+            
+            <!-- Product Image -->
+            <img class="thumbnail mb-2"
+                 src="{{ product.imageURL }}"
+                 alt="{{ product.name }}"
+                 style="width: 100%; max-height: 200px; object-fit: contain;">
+
+            <!-- Product Title -->
+            <h6 class="mb-2"><strong>{{ product.name }}</strong></h6>
+            <hr>
+
+            <!-- Buttons -->
+            <div class="mb-3">
+                <button data-product="{{ product.id }}" 
+                        data-action="add" 
+                        class="btn btn-outline-secondary update-cart">
+                    Add to Cart
+                </button>
+                <a class="btn btn-outline-success" href="#">View</a>
+            </div>
+
+            <!-- Product Price -->
+            <h4><strong>${{ product.price|floatformat:2 }}</strong></h4>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center mt-4">
+        <p>No products available.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock content %}

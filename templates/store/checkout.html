@@ -1,0 +1,176 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+
+<div class="row">
+
+	<!-- 🧾 User & Shipping Form -->
+	<div class="col-lg-6">
+		<div class="box-element" id="form-wrapper">
+			<form id="form">
+
+				<!-- 👤 User Info -->
+				<div id="user-info">
+					<h5>User Information:</h5>
+					<hr>
+					<div class="form-field mb-2">
+						<input required class="form-control" type="text" name="name" placeholder="Name..">
+					</div>
+					<div class="form-field mb-2">
+						<input required class="form-control" type="email" name="email" placeholder="Email..">
+					</div>
+				</div>
+
+				<!-- 📦 Shipping Info -->
+				{% if order.shipping %}
+				<div id="shipping-info">
+					<hr>
+					<h5>Shipping Information:</h5>
+					<hr>
+					<div class="form-field mb-2">
+						<input required class="form-control" type="text" name="address" placeholder="Address..">
+					</div>
+					<div class="form-field mb-2">
+						<input required class="form-control" type="text" name="city" placeholder="City..">
+					</div>
+					<div class="form-field mb-2">
+						<input required class="form-control" type="text" name="state" placeholder="State..">
+					</div>
+					<div class="form-field mb-2">
+						<input required class="form-control" type="text" name="zipcode" placeholder="Zip Code..">
+					</div>
+					<div class="form-field mb-2">
+						<input required class="form-control" type="text" name="country" placeholder="Country..">
+					</div>
+				</div>
+				{% endif %}
+
+				<hr>
+				<input id="form-button" class="btn btn-success btn-block" type="submit" value="Continue">
+			</form>
+		</div>
+	</div>
+
+	<!-- 🛒 Order Summary -->
+	<div class="col-lg-6">
+		<div class="box-element">
+			<a class="btn btn-outline-dark" href="{% url 'cart' %}">&#x2190; Back to Cart</a>
+			<hr>
+			<h3>Order Summary</h3>
+
+			<!-- Header -->
+			<div style="display: flex; border-bottom: 1px solid #ccc; padding: 10px 0; font-weight: bold;">
+				<div style="flex: 1;">Item</div>
+				<div style="flex: 0 0 80px; text-align: right;">Price</div>
+				<div style="flex: 0 0 60px; text-align: center;">Qty</div>
+				<div style="flex: 0 0 80px; text-align: right;">Total</div>
+			</div>
+
+			<!-- Items -->
+			{% for item in items %}
+			<div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee;">
+				<div style="flex: 1; display: flex; align-items: center;">
+					<img class="row-image" style="height: 60px; width: 60px; object-fit: contain; margin-right: 15px;"
+						src="{% if item.product.image %}{{ item.product.image.url }}{% else %}{% static 'images/placeholder.png' %}{% endif %}">
+					<p style="margin: 0;">{{ item.product.name }}</p>
+				</div>
+				<div style="flex: 0 0 80px; text-align: right;">${{ item.product.price|floatformat:2 }}</div>
+				<div style="flex: 0 0 60px; text-align: center;">{{ item.quantity }}</div>
+				<div style="flex: 0 0 80px; text-align: right; font-weight: 600;">${{ item.get_total|floatformat:2 }}
+				</div>
+			</div>
+			{% empty %}
+			<p>No items in cart.</p>
+			{% endfor %}
+
+			<hr>
+
+			<!-- Totals -->
+			<div style="display: flex; justify-content: space-between; padding: 10px 0;">
+				<h5>Items: {{ order.get_cart_items }}</h5>
+				<h4>Total: ${{ order.get_cart_total|floatformat:2 }}</h4>
+			</div>
+
+			<!-- 💳 Payment Section -->
+			<button id="make-payment" class="btn btn-success btn-block mb-2">Make Payment</button>
+
+			<div id="payment-options" style="display: none;">
+				<button class="btn btn-outline-primary btn-block mb-2" onclick="showScanner('PhonePe')">PhonePe</button>
+				<button class="btn btn-outline-success btn-block mb-2" onclick="showScanner('BHIM UPI')">BHIM
+					UPI</button>
+				<button class="btn btn-outline-info btn-block mb-2" onclick="showScanner('Google Pay')">Google
+					Pay</button>
+			</div>
+
+			<!-- QR Scanner -->
+			<div id="scanner-display" class="mt-2 text-center" style="display: none;">
+				<img id="scanner-image" src="" alt="Scan QR"
+					style="max-width: 220px; border: 2px solid #ccc; border-radius: 10px;">
+				<p id="scanner-text" style="margin-top: 5px; font-weight: 500;"></p>
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<script>
+	// 🧠 Validate form and auto-open payment
+	document.getElementById('form-button').addEventListener('click', function (e) {
+		e.preventDefault();
+		const form = document.getElementById('form');
+		const name = form.name.value.trim();
+		const email = form.email.value.trim();
+		const address = form.address?.value.trim() || '';
+		const city = form.city?.value.trim() || '';
+		const state = form.state?.value.trim() || '';
+		const zipcode = form.zipcode?.value.trim() || '';
+		const country = form.country?.value.trim() || '';
+
+		const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+		const zipPattern = /^[0-9]{5,6}$/;
+
+		if (!name || !email || !emailPattern.test(email) || !address || !city || !state || !zipPattern.test(zipcode) || !country) {
+			alert("⚠️ Please fill in all fields correctly before continuing.");
+			return;
+		}
+
+		// Auto open payment section
+		document.getElementById('payment-options').style.display = 'block';
+		document.getElementById('scanner-display').style.display = 'none';
+		document.getElementById('make-payment').scrollIntoView({ behavior: 'smooth' });
+	});
+
+	// 💰 Toggle both payment and scanner
+	document.getElementById('make-payment').addEventListener('click', function () {
+		const options = document.getElementById('payment-options');
+		const scanner = document.getElementById('scanner-display');
+
+		if (options.style.display === 'none' || options.style.display === '') {
+			// Show both when clicked first
+			options.style.display = 'block';
+		} else {
+			// Hide both when clicked again
+			options.style.display = 'none';
+			scanner.style.display = 'none';
+		}
+	});
+
+	// 📷 Show QR Scanner when payment method clicked
+	function showScanner(method) {
+		const scannerDiv = document.getElementById('scanner-display');
+		const scannerImg = document.getElementById('scanner-image');
+		const scannerText = document.getElementById('scanner-text');
+
+		// Choose correct image
+		scannerImg.src = (method === 'BHIM UPI')
+			? "{% static 'images/bhim scanner.jpeg' %}"
+			: "{% static 'images/bhim scanner.jpeg' %}";
+
+		scannerText.innerText = `Scan this QR using ${method}`;
+		scannerDiv.style.display = 'block';
+		scannerDiv.scrollIntoView({ behavior: 'smooth' });
+	}
+</script>
+
+
+{% endblock content %}

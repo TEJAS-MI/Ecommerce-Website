@@ -1,0 +1,118 @@
+/* ===========================
+    Base
+=========================== */
+body {
+   background-color: #f1f5fb;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+/* ===========================
+    Headings
+=========================== */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #2c3e50;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* ===========================
+    Containers
+=========================== */
+.box-element {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 20px;
+  transition: box-shadow 0.3s ease;
+}
+
+.box-element:hover {
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* ===========================
+    Thumbnails (fixed)
+=========================== */
+.row-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+/* ===========================
+    Cart Row
+=========================== */
+.cart-row {
+  display: flex;
+  align-items: center;
+  padding: 15px 0;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #ddd;
+  min-height: 80px;
+  flex-wrap: nowrap;
+}
+
+/* FIXED COLUMN WIDTHS – EXACT MATCH TO YOUR HTML */
+.cart-row > div:nth-child(1) {
+  flex: 2;
+}
+.cart-row > div:nth-child(2) {
+  flex: 2;
+}
+.cart-row > div:nth-child(3) {
+  flex: 1;
+}
+.cart-row > div:nth-child(4) {
+  flex: 1;
+}
+.cart-row > div:nth-child(5) {
+  flex: 1;
+}
+
+/* ===========================
+    Quantity Controls
+=========================== */
+.quantity-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.quantity-number {
+  font-weight: 600;
+  margin: 0;
+}
+
+.quantity-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chg-quantity {
+  font-size: 14px;
+  cursor: pointer;
+  margin: 2px 0;
+}
+
+/* ===========================
+    Responsive Fix
+=========================== */
+@media screen and (max-width: 768px) {
+  .cart-row {
+    flex-wrap: wrap;
+  }
+  .cart-row > div {
+    flex: 1 1 100% !important;
+    margin-bottom: 10px;
+  }
+}
